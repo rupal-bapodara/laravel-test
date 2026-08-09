@@ -2,13 +2,63 @@
 
 ## General
 
-- Follow Laravel conventions and existing project structure.
+- Follow Laravel conventions and the existing project structure.
 - Before creating new files, inspect the existing codebase and reuse existing patterns.
-- Keep implementations simple and maintainable.
+- Keep implementations simple, readable, and maintainable.
 - Do not introduce unnecessary abstractions or design patterns.
 - Use dependency injection instead of creating dependencies manually.
 - Follow SOLID principles where they provide real value.
 - Do not duplicate business logic.
+- Do not modify unrelated files while implementing a feature.
+
+## Docker Environment
+
+- This Laravel application runs inside Docker.
+- Always use the Docker `app` container for PHP, Composer, Artisan, and Pest commands.
+- Do not run PHP, Composer, Artisan, or Pest directly on the host machine.
+- Use `docker compose exec app` for application commands.
+
+Examples:
+
+- Artisan:
+  `docker compose exec app php artisan <command>`
+
+- Composer:
+  `docker compose exec app composer <command>`
+
+- Pest:
+  `docker compose exec app ./vendor/bin/pest`
+
+- Laravel tests:
+  `docker compose exec app php artisan test`
+
+- Migrations:
+  `docker compose exec app php artisan migrate`
+
+- Clear Laravel cache:
+  `docker compose exec app php artisan optimize:clear`
+
+- Do not use `chmod 777` or recursive `chown` as a workaround for application problems.
+- Do not create temporary permission workarounds to run tests or Composer.
+- Before running application commands, inspect the existing Docker Compose services and use the appropriate container.
+- Do not create duplicate PHP, MySQL, Redis, or other services outside the existing Docker environment.
+
+## Docker Services
+
+- Use Docker service names for communication between containers.
+- Laravel must connect to MySQL using the Docker service name, not `localhost`.
+- Laravel must connect to Redis using the Docker service name, not `localhost`.
+- Do not change Docker hostnames without checking `docker-compose.yml`.
+
+Example:
+
+```env
+DB_HOST=mysql
+DB_PORT=3306
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
 
 ## Controllers
 
@@ -80,12 +130,30 @@
 
 ## Testing
 
-- Add feature tests for APIs.
-- Add unit tests for important business logic.
+- Use Pest PHP for tests.
+- Prefer feature tests for API and application behavior.
+- Use unit tests only for meaningful isolated business logic.
+- Do not create unit tests merely because a class exists.
 - Use factories for test data.
-- Use `Queue::fake()` when testing job dispatching.
-- Use `Mail::fake()` when testing email dispatching.
+- Use Queue::fake() when testing queued jobs.
+- Use Mail::fake() when testing mail dispatching.
+- Use Event::fake() when testing events.
 - Tests must not depend on real external services.
+- Test successful scenarios and important failure/validation cases.
+- Keep tests focused on behavior rather than implementation details.
+
+<!--
+## Code Formatting
+
+- Use Laravel Pint for PHP code formatting.
+- Follow the existing project formatting conventions.
+- Run Pint after implementing PHP changes.
+- Do not manually reformat unrelated files.
+- Do not disable Pint rules just to make formatting pass.
+- Before completing a feature, verify formatting with:
+
+  `docker compose exec app ./vendor/bin/pint --test`
+-->
 
 ## Error Handling
 
@@ -93,6 +161,24 @@
 - Use Laravel's exception handling mechanisms.
 - Return meaningful and consistent API error responses.
 - Log unexpected application errors appropriately.
+
+## API Error Handling
+
+- All API endpoints must return JSON responses.
+- Use appropriate HTTP status codes.
+- Successful responses should have a consistent JSON structure.
+- Validation failures should return HTTP 422 with validation errors.
+- Authentication failures should return HTTP 401.
+- Authorization failures should return HTTP 403.
+- Resource not found should return HTTP 404.
+- Conflict/business rule failures should use an appropriate 4xx status code.
+- Unexpected server errors should return HTTP 500 without exposing stack traces, SQL queries, credentials, or internal implementation details.
+- Do not add generic try/catch blocks to every controller method.
+- Catch exceptions only when the application can meaningfully handle them.
+- Use Laravel's exception handling mechanism for unexpected exceptions.
+- Log unexpected exceptions appropriately.
+- API error responses should contain a clear, client-safe message.
+- Do not return HTML error pages from API endpoints.
 
 ## Security
 
@@ -111,6 +197,15 @@
 - Avoid duplicated code.
 - Add comments only when they explain why something is done, not what the code obviously does.
 - Do not modify unrelated files while implementing a feature.
+
+<!--
+## CI/CD
+
+- All tests must pass before code is considered complete.
+- Use Pest PHP for automated tests.
+- Use Laravel Pint for code formatting checks.
+- Use PHPStan/Larastan for static analysis.
+-->
 
 ## Before Implementation
 
