@@ -7,9 +7,7 @@ use Illuminate\Mail\Mailable;
 
 class OrderPlacedEmail extends Mailable
 {
-    public function __construct(public Order $order)
-    {
-    }
+    public function __construct(public Order $order) {}
 
     public function build(): self
     {

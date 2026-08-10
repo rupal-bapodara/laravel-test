@@ -7,9 +7,7 @@ use Illuminate\Mail\Mailable;
 
 class WelcomeEmail extends Mailable
 {
-    public function __construct(public User $user)
-    {
-    }
+    public function __construct(public User $user) {}
 
     public function build(): self
     {
