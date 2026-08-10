@@ -56,7 +56,24 @@ services:
             - "1025:1025"
         networks:
             - laravel-test
-
+    supervisor:
+        container_name: laravel-test-supervisor
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - .:/var/www
+            - ./docker/supervisor/supervisor.conf:/etc/supervisor/conf.d/laravel-worker.conf
+        command: >
+            sh -c "
+            mkdir -p /var/www/storage/logs/supervisor &&
+            touch /var/www/storage/logs/supervisor/supervisord.log &&
+            /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+            "
+        depends_on:
+            - redis
+        networks:
+            - laravel-test
 networks:
     laravel-test:
         driver: bridge

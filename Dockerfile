@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     unzip \
+    supervisor \
     libzip-dev \
     libpng-dev \
     libonig-dev \
@@ -18,11 +19,16 @@ RUN apt-get update && apt-get install -y \
     zip \
     && rm -rf /var/lib/apt/lists/*
 
-    # Redis PHP extension
+# Redis PHP extension
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
+# Supervisor configuration
+COPY docker/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 
 EXPOSE 9000
 
