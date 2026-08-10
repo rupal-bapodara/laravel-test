@@ -5,7 +5,7 @@ services:
             dockerfile: Dockerfile
 
         container_name: laravel-test-app
-
+        user: "1000:1000"
         volumes:
             - .:/var/www
 
