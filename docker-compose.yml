@@ -48,6 +48,14 @@ services:
         container_name: laravel-test-redis
         networks:
             - laravel-test
+    mailpit:
+        image: axllent/mailpit:latest
+        container_name: laravel-test-mailpit
+        ports:
+            - "8025:8025"
+            - "1025:1025"
+        networks:
+            - laravel-test
 
 networks:
     laravel-test:

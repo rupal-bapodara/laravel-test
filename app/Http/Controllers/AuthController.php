@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserRegistered;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
@@ -14,6 +15,8 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create($request->validated());
+        UserRegistered::dispatch($user);
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
